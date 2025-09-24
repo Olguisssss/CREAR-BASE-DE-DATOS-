@@ -111,7 +111,7 @@ select * from customers
 where customerNumber in (select customerNumber from orders where orderDate between "2003-01-10" and "2003-03-10");
 select customerNumber from orders where orderDate between "2003-01-10" and "2003-03-10";
 
--PARA UNIR COLUMNAS EN UNA SOLAM DE DIFERENTES TABLAS
+-PARA UNIR COLUMNAS EN UNA SOLA DE DIFERENTES TABLAS
 select customerName from customers
 union
 select firstName from employees
@@ -162,3 +162,103 @@ inner join employees e
 on e.employeeNumber = c.salesRepEmployeeNumber
 inner join employees j
 on j.employeeNumber = e.reportsTo;
+
+select * from classicmodels.customers;
+select c.customerName, e.firstName, e.lastName
+from customers c 
+inner join employees e
+on c.salesRepEmployeeNumber = e.employeeNumber;
+
+use classicmodels;
+select * from classicmodels.customers;
+select c.customerName, p.checkNumber, p.amount
+from customers c
+left join payments p
+on p.customerNumber = c.customerNumber
+where p.checkNumber is null;
+
+select o.orderDate, o.orderNumber, c.customerName from classicmodels.orders o 
+right join classicmodels.customers c
+on c.customerNumber = o.customerNumber
+order by o.orderNumber asc;
+
+select o.orderDate, o.orderNumber, c.customerName from classicmodels.orders o 
+right join classicmodels.customers c
+on c.customerNumber = o.customerNumber
+where o.orderNumber is null
+order by o.orderNumber asc;
+
+select o.orderDate, o.orderNumber, c.customerName
+from classicmodels.customers c
+left join classicmodels.order o 
+on c.customerNumber = o.customerNumber
+where o.orderNumber is null
+
+use classicmodels;
+select o.orderNumber, p.productName, od.quantityOrdered, od.priceEach, (od.quantityOrdered * od.priceEach) as total
+from orders o
+join orderdetails od
+on od.orderNumber = o.orderNumber
+join products p
+on p.productCode = od.productCode
+
+-CONSULTA EL CLIENTE QUE MAS HA COMPRADO Y SUMAR EL VALOR:
+use classicmodels;
+select c.customerName, sum(amount) as pagos
+from customers c
+join payments p
+on p.customerNumber = c.customerNumber
+group by p.customerNumber
+order by pagos desc
+
+VISTAS EN MYSQL: una vista es una tabla virtual que se crea a partir de una o varias tablas mediante una consulta SQL.
+
+-CREAR VISTA DE PRODUCTOS CON STOCK BAJO:
+use classicmodels;
+create view vista_productos_bajo as
+select productCode, productName, quantityInStock from classicmodels.products
+where quantityInStock < 10;
+select * from vista_productos_bajo;
+
+-PARA ELIMINAR UNA TABLA DE VIEW(VISTA:
+drop view vista_productos;
+
+-UNA VISTA QUE CALCULE EL TOTAL DE COMPRAS POR CADA CLIENTE:
+use classicmodels;
+create view ventasClientes as
+select c.customerName, sum(od.priceEach * od.quantityOrdered) as total
+from orderdetails od
+join orders o
+on o.orderNumber = od.orderNumber
+join customers c
+on c.customerNumber = o.customerNumber
+group by customerName
+order by total desc;
+select * from ventasclientes;
+
+-ACTUALIZACIÓN DE VISTAS:
+update vista_productos_bajo set quantityInStock = 80 where productCode = "s12_1099"
+PARA VER EL CAMBIO:
+select * from products where productCode = "s12_1099";
+
+-FUNCIONES:
+use classicmodels;
+
+DELIMITER //
+create function totalPedidos(clienteId int)
+returns decimal(10,2)
+deterministic
+BEGIN
+DECLARE total DECIMAL (10,2);
+select sum(od.priceEach * od.quantityOrdered) into total
+from orders o
+join orderdetails od
+on o.orderNumber = od.orderNumber
+where customerNumber = clienteId;
+return total;
+END //
+DELIMITER ;
+
+-- uso
+select customerName, totalPedidos(customerNumber) as gasto
+from customers order by gasto desc;
