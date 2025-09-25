@@ -1,7 +1,7 @@
 # CREAR-BASE-DE-DATOS-
 INSTRUCCIONES PARA CREAR BASE DE DATOS
 
-1)CREAR BASE DE DATOS:   create database nombre; base
+1)CREAR BASE DE DATOS:   create database nombre;   equiposBiomedicos
 
 2)LISTAR BASE DE DATOS: show database;
 
@@ -37,7 +37,7 @@ CHANGE COLUMN `fecha_registro` `telefono` VARCHAR(20) NULL DEFAULT NULL ,       
 ADD UNIQUE INDEX `correo_electronico_UNIQUE` (`email` ASC) VISIBLE;
 ;
 
-- O SI UNO QUIERE EDITAR LOS DATOS SIN CODIGO, DA CLIC DERECHO Y LUEGO "ALTER SCHEMA"
+- O SI UNO QUIERE EDITAR LOS DATOS SIN CODIGO, DA CLIC DERECHO EN LA TABLA QUE DESEO EDITAR Y LUEGO "ALTER TABLE"
 
 - PARA INSERTAR INFORMACION DENTRO DE LOS VALORES DE LA TABLA:
 insert into idpedido (fecha,valor,idseguimiento,idusuario) 
@@ -262,3 +262,4 @@ DELIMITER ;
 -- uso
 select customerName, totalPedidos(customerNumber) as gasto
 from customers order by gasto desc;
+
