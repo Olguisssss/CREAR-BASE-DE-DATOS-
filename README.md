@@ -40,6 +40,7 @@ ADD UNIQUE INDEX `correo_electronico_UNIQUE` (`email` ASC) VISIBLE;
 - O SI UNO QUIERE EDITAR LOS DATOS SIN CODIGO, DA CLIC DERECHO EN LA TABLA QUE DESEO EDITAR Y LUEGO "ALTER TABLE"
 
 - PARA INSERTAR INFORMACION DENTRO DE LOS VALORES DE LA TABLA:
+use database;
 insert into idpedido (fecha,valor,idseguimiento,idusuario) 
 values ("2025-09-22","45000",1,3);
 
